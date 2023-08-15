@@ -6,7 +6,7 @@ public class TarefaV1CriarService implements TarefaCriarService{
     private TarefaRepository tarefaRepository;
 
     public Tarefa criar(TarefaPostDTO tarefaPostDTO){
-            return TAREFArEPOSITORY.add(
+            return tarefaRepository.add(
                     Tarefa.builder()
                             .titulo(tarefa)
             )

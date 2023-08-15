@@ -10,6 +10,10 @@ public class TarefaVolatilRepository implements TarefaRepository {
     }
 
     public Tarefa add(Tarefa tarefa){
-        return tarefas.put(nextId, tarefa)
+        tarefa.setId(nextId++);
+        tarefas.put(tarefa.getId(), tarefa);
+        return tarefa.get(tarefa.getId());
     }
+
+    public Tarefa update (Long )
 }

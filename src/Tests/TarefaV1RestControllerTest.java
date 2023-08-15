@@ -35,6 +35,12 @@ public class TarefaV1RestControllerTest {
     @Autowired
     MockMvc driver;
 
+    @Autowided
+    TarefaRepository tarefaRepository;
+
+    @Autowided
+    ModelMapper modelMapper;
+
     TarefaPostDTO = tarefaRestDTO;
 
     Object Mapper obbejct mapper;
@@ -57,23 +63,24 @@ public class TarefaV1RestControllerTest {
         @DisplauName("Quando criar tarefa com dados validos")
         void quandoCriarTarefaComDadosValidos(){
             //Arrange
-            tarefaPostDTO = TarefaPostDTO.builder()
+            tarefaPostPutDTO = TarefaPostPutDTO.builder()
                     .titulo("COmpra carne")
                     .detalhamento("3kg")
                     .prioritaria(true)
                     .build();
-
+            tarefaRepository.add(modelMapper.map(tarefaPostPutDTO, Tarefa.class));
             //Act
+
 
             String resultadoStr = driver.perform(MockMvcRequestBuilders.post(URL_TEMPLEAT)
                             .contentType(MediaType.APPLICATION_JSON) //Header
-                            .content(objectMapper.writeValeuAsString(tarefaPostDTO))) // body
+                            .content(objectMapper.writeValeuAsString(tarefaPostPutDTO))) // body
                     .andExpect(status().isCreatd()) //codigo201 //isCreatd pode variar
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
 
             //tarefa tem que noallcontructor e Allargs algumacoisa
-            Tarefa tarefaResultado = objectMapper.covertValue(resultadoStr, Tarefa.class);
+            Tarefa tarefaResultado = objectMapper.readValue(resultadoStr, Tarefa.class);
 
             //Assert -> padrão AAA
 
@@ -87,5 +94,43 @@ public class TarefaV1RestControllerTest {
 
     }
 
+    @Nested
+    @DisplayName("Atualizacao de Tarefas")
+    class ValidacaoDeEntradasAtualizacao{
+
+        @Test
+        @DisplauName("Quando ataualizar tarefa com dados validos")
+        void quandoAtualizarTarefaComDadosValidos(){
+            //Arrange
+            tarefaPostPutDTO = TarefaPostPutDTO.builder()
+                    .titulo("COmpra carne")
+                    .detalhamento("3kg")
+                    .prioritaria(true)
+                    .build();
+            Tarefa tarefaBase = tarefaRepository.add(modelMapper.map(tarefaPostPutDTO, Tarefa.class));
+            //Act
+            tarefaPostPutDTO.setDetalhamento("comentario blabla");
+            tarefaPostPutDTO.setTitulo("blbla")
+            String resultadoStr = driver.perform(MockMvcRequestBuilders.post(URL_TEMPLEAT)
+                            .contentType(MediaType.APPLICATION_JSON) //Header
+                            .content(objectMapper.writeValeuAsString(tarefaPostPutDTO))) // body
+                    .andExpect(status().isCreatd()) //codigo201 //isCreatd pode variar
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            //tarefa tem que noallcontructor e Allargs algumacoisa
+            Tarefa tarefaResultado = objectMapper.readValue(resultadoStr, Tarefa.class);
+
+            //Assert -> padrão AAA
+
+            assertNotNull(tarefaResultado.getId());
+            assertTrue(tarefaResultado.getId > 0);
+            assertNorNull(tarefaResultado.getDetalhamento());
+            asserEquals(tarefaPostDTO.getTitulo() ,tarefaResultado.getTitulo());
+
+
+        }
+
+    }
 
 }
